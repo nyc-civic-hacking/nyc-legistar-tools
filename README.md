@@ -14,7 +14,7 @@
 1. clone the repo:   
 `git clone git@github.com:nyc-civic-hacking/nyc-legistar-tools.git`
 
-2. (if you need to install node):   
+2. (if you need to install node):
    1. install nvm
     `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash`
    2. install node
