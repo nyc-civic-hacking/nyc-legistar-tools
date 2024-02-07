@@ -11,7 +11,7 @@
 
 ## Getting Started:
 
-1. clone the repo
+1. clone the repo:
 `git clone git@github.com:nyc-civic-hacking/nyc-legistar-tools.git`
 
 2. (if you need to install node):
