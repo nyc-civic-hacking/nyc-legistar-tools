@@ -1,35 +1,35 @@
 # NYC Civic Hacking 101
 
-- 🔧 work on projects with your friends
-- 🚀 help NYC governance
-- 👶 baby steps, small projects, easy wins
-- 🍎 focus on low-hanging fruit
-- 🧪 experimentation + delight
-- 🐌 patient, inevitable progress
-- 🙅‍♂️ have a good time, do not have a bad time
-- 👀 permissionless, open source, public
+🔧 work on projects with your friends   
+🚀 help NYC governance   
+👶 baby steps, small projects, easy wins   
+🍎 focus on low-hanging fruit   
+🧪 experimentation + delight   
+🐌 patient, inevitable progress   
+🙅‍♂️ have a good time, do not have a bad time   
+👀 permissionless, open source, public   
 
 ## Getting Started:
 
-1. clone the repo:
+1. clone the repo:   
 `git clone git@github.com:nyc-civic-hacking/nyc-legistar-tools.git`
 
-2. (if you need to install node):
+2. (if you need to install node):   
    1. install nvm
     `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash`
    2. install node
     `nvm install node`
 
-3. install bun
+3. install bun   
 `npm install -g bun`
 
-4. move into the graphql api directory
+4. move into the graphql api directory   
 `cd legistar-graphql-api`
 
-5. install dependencies
+5. install dependencies   
 `bun i`
 
-6. run the app
+6. run the app   
 `bun dev`
 
 
