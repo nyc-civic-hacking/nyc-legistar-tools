@@ -13,14 +13,14 @@ for later:
 💡 give testimony to city council
 
 
-### What is Civic Hacking?
+## What is Civic Hacking?
 
 "Hackers embody sharing, openness, decentralization — coding to improve the world"
 -- Ben Balter, [What is a 'Hacker'?](https://ben.balter.com/2013/02/04/what-is-a-hacker)
 
 Hackers are inspired by the ["Hacker Ethos"](https://www.amazon.com/Hackers-Computer-Revolution-Anniversary-ebook/dp/B003PDMKIY/?tag=benbalter07-20)
 
-#### Two Parts: Useful Research + Data // Useful Tool Building
+### Two Parts: Useful Research + Data // Useful Tool Building
 
 In this class, there are two types of Civic Hackers that we will address:
 1. [Researchers](#pillar-1-research)
@@ -38,7 +38,7 @@ To that end, we'll be teaching everyone a little bit of both, and then we'll do 
 
 This class is highly independent, so it might feel a bit scary at times, but we're both here to answer questions and get you back on track; we're always happy to rescope a project, or put you on a different team, or whatever it takes to make sure you feel confident in your work.
 
-#### We rely on Maximum New York to inform Governmental Mechanics
+### We rely on Maximum New York to inform Governmental Mechanics
 Daniel runs a civic school, [Maximum New York](https://www.maximumnewyork.com/), which teaches 100s of students how the government works. Many work in the government, write civic blogs, and/or do novel research.
 
 Daniel works with and is followed by NYC staffers, City Councilmembers, Community Board Members, etc.
@@ -47,7 +47,7 @@ If we build tools that are useful to Maximum New York, we are building tools tha
 
 In other words, by partnering with Maximum New York, we fulfill a useful and unfilled niche in the NYC governmental ecosystem
 
-#### We aren't profit focused:
+### We aren't profit focused:
 - We are not trying to make money here, there are much better ways to make money writing software.
 - We do this on the side.
 
@@ -76,7 +76,7 @@ You should be able to:
 Just these skills are enough to get your results consistently published and talked about in the NYC political ecosystem.
 
 
-#### Why Datawrapper?
+### Why Datawrapper?
 Datawrapper is a crucial tool to understand and learn:
 - Substack is the fastest growing tool for civic, economic, and political writing on the internet
 - Datawrapper is the only tool (we are aware of) with INTERACTIVE graphic embeds in Substack.
@@ -94,7 +94,7 @@ Datawrapper is a crucial tool to understand and learn:
 
 - How many participatory budgeting votes did each of the 51 city council districts receive?
 
-##### Discretionary Funds + Budgeting:
+#### Discretionary Funds + Budgeting:
 
 Context: City council has a giant pool of discretionary funds. They often give this to a giant fleet of things, especially nonprofits, for sometimes good and sometimes questionable reasons.
 
@@ -114,7 +114,7 @@ We don’t know exactly what we’re looking for, but here are some good questio
 
 Ideally we want to provide open data, to Tee Up other people to perform audits on these groups.
 
-##### About the City Council:
+#### About the City Council:
 
 Attendance Records can be found on Legistar:
 - HEAT MAP: attendance by council district
@@ -135,7 +135,7 @@ You should be able to:
 4. Build a GraphQL Schema/API using that client, to explore the API locally
 
 
-#### Granicus / Legistar is the most important legislative software in the US
+### Granicus / Legistar is the most important legislative software in the US
 - Despite this, the tooling is far less than we might expect.
 - For now, we are focused on improving tools to explore and understand the NYC legislature.
   - Nicely, this benefits almost all US cities which use Legistar (most of them)
