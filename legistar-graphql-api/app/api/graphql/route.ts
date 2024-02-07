@@ -1,0 +1,100 @@
+import { YogaInitialContext, createSchema, createYoga } from 'graphql-yoga';
+import SchemaBuilder from '@pothos/core';
+import { ORDER_BY_ENUM_VALUES, YEAR_ENUM_VALUES } from '@/graphql/constants';
+import { OrderByEnumValue } from '@/graphql/types';
+import { events } from '@/graphql/resolvers';
+import { GranicusEvent } from '@/legistar/types';
+
+export interface Context {
+  legistarApiToken: string | null
+}
+
+function getBearerTokenFromRequest(request: Request): string | null {
+  const authHeader = request.headers.get('Authorization');
+  if (authHeader) {
+    const parts = authHeader.split(' ');
+    if (parts.length === 2 && parts[0] === 'Bearer') {
+      return parts[1];
+    }
+  }
+  return null;
+}
+
+function getContext(initial: YogaInitialContext): Context {
+  const legistarApiToken = getBearerTokenFromRequest(initial.request)
+  return { legistarApiToken }
+}
+
+const builder = new SchemaBuilder<{ Context: Context, Objects: { Event: GranicusEvent } }>({});
+
+builder.objectType('Event', {
+  description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusEvent",
+  fields: (t) => ({
+    id: t.exposeInt('EventId'),
+    guid: t.exposeString('EventGuid'),
+    lastModifiedAt: t.exposeString('EventLastModifiedUtc'),
+    date: t.exposeString('EventDate'),
+    bodyId: t.exposeInt('EventBodyId'),
+    bodyName: t.exposeString('EventBodyName'),
+    time: t.exposeString('EventTime'),
+    videoStatus: t.exposeString('EventVideoStatus'),
+    videoPath: t.exposeString('EventVideoPath', { nullable: true }),
+    agendaStatusId: t.exposeInt('EventAgendaStatusId'),
+    agendaStatusName: t.exposeString('EventAgendaStatusName'),
+    minutesStatusId: t.exposeInt('EventMinutesStatusId'),
+    minutesStatusName: t.exposeString('EventMinutesStatusName'),
+    location: t.exposeString('EventLocation'),
+    agendaFile: t.exposeString('EventAgendaFile'),
+    minutesFile: t.exposeString('EventMinutesFile', { nullable: true }),
+    agendaLastPublishedAt: t.exposeString('EventAgendaLastPublishedUTC'),
+    minutesLastPublishedAt: t.exposeString('EventMinutesLastPublishedUTC', { nullable: true }),
+    comment: t.exposeString('EventComment', { nullable: true }),
+    inSiteURL: t.exposeString('EventInSiteURL'),
+    items: t.exposeStringList('EventItems'),
+  })
+})
+
+const YearEnum = builder.enumType('Year', {
+  // creates an array of year strings formatted like Y2015 for years from 1999 to 2024
+  values: YEAR_ENUM_VALUES
+});
+
+const OrderByEnum = builder.enumType('OrderBy', {
+  values: ORDER_BY_ENUM_VALUES as OrderByEnumValue[]
+})
+
+builder.queryType({
+  fields: (t) => ({
+    events: t.field({
+      args: {
+        year: t.arg({
+          description: "Years that the city council has been in session",
+          type: YearEnum,
+          required: true
+        }),
+        orderBy: t.arg({
+          description: "Field and direction to order by",
+          type: OrderByEnum
+        })
+      },
+      type: ['Event'],
+      resolve: async (_, args, context) => {
+        const token = context.legistarApiToken
+        if (!token) return []
+        return events({
+          yearArg: args.year,
+          orderByArg: args.orderBy,
+          token
+        })
+      }
+    })
+  }),
+});
+
+const { handleRequest } = createYoga({
+  schema: builder.toSchema(),
+  context: getContext
+});
+
+
+export { handleRequest as GET, handleRequest as POST, handleRequest as OPTIONS }
