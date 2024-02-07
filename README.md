@@ -1,13 +1,13 @@
 # NYC Civic Hacking 101
 
-🔧 work on projects with your friends
-🚀 help NYC governance
-👶 baby steps, small projects, easy wins
-🍎 focus on low-hanging fruit
-🧪 experimentation + delight
-🐌 patient, inevitable progress
-🙅‍♂️ have a good time, do not have a bad time
-👀 permissionless, open source, public
+- 🔧 work on projects with your friends
+- 🚀 help NYC governance
+- 👶 baby steps, small projects, easy wins
+- 🍎 focus on low-hanging fruit
+- 🧪 experimentation + delight
+- 🐌 patient, inevitable progress
+- 🙅‍♂️ have a good time, do not have a bad time
+- 👀 permissionless, open source, public
 
 for later:
 💡 give testimony to city council
