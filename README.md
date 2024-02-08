@@ -24,7 +24,7 @@
 `npm install -g bun`
 
 4. move into the graphql api directory   
-`cd legistar-graphql-api`
+`cd nyc-legistar-tools/legistar-graphql-api`
 
 5. install dependencies   
 `bun i`
