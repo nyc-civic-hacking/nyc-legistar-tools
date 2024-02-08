@@ -12,7 +12,7 @@
 ## Getting Started:
 
 1. clone the repo:   
-`git clone git@github.com:nyc-civic-hacking/nyc-legistar-tools.git`
+`git clone https://github.com/nyc-civic-hacking/nyc-legistar-tools.git`
 
 2. (if you need to install node):
    1. install nvm
