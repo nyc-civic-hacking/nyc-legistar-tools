@@ -22,6 +22,17 @@ export interface GranicusEvent {
   EventItems: []
 }
 
+export type GranicusMatterAttachment = {
+  MatterAttachmentId: string,
+  MatterAttachmentName: string,
+  MatterAttachmentHyperlink: string
+}
+
+export type GranicusEventItem = {
+  EventItemId: string,
+  EventItemMatterAttachments: GranicusMatterAttachment[]
+}
+
 export interface GranicusPerson {
   PersonId: number,
   PersonGuid: string,

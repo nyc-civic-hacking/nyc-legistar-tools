@@ -23,6 +23,7 @@ export async function events(args: {
     orderByParam,
     token: args.token
   })
+  console.log(events[0]);
   return events
 }
 

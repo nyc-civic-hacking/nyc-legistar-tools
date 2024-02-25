@@ -3,7 +3,9 @@ import SchemaBuilder from '@pothos/core';
 import { ORDER_BY_ENUM_VALUES, YEAR_ENUM_VALUES } from '@/graphql/constants';
 import { OrderByEnumValue } from '@/graphql/types';
 import { activePersons, events, officeRecords, persons } from '@/graphql/resolvers';
-import { GranicusEvent, GranicusOfficeRecord, GranicusPerson } from '@/legistar/types';
+import { GranicusEvent, GranicusEventItem, GranicusMatterAttachment, GranicusOfficeRecord, GranicusPerson } from '@/legistar/types';
+import { get } from '@/legistar';
+import { BASE_URL } from "@/legistar/constants"
 import { zipObject } from 'lodash';
 
 export interface Context {
@@ -26,7 +28,7 @@ function getContext(initial: YogaInitialContext): Context {
   return { legistarApiToken }
 }
 
-const builder = new SchemaBuilder<{ Context: Context, Objects: { Event: GranicusEvent, CouncilMember: GranicusPerson, OfficeRecord: GranicusOfficeRecord } }>({});
+const builder = new SchemaBuilder<{ Context: Context, Objects: { Event: GranicusEvent, MatterAttachment: GranicusMatterAttachment, EventItem: GranicusEventItem, CouncilMember: GranicusPerson, OfficeRecord: GranicusOfficeRecord } }>({});
 
 builder.objectType('Event', {
   description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusEvent",
@@ -51,9 +53,50 @@ builder.objectType('Event', {
     minutesLastPublishedAt: t.exposeString('EventMinutesLastPublishedUTC', { nullable: true }),
     comment: t.exposeString('EventComment', { nullable: true }),
     inSiteURL: t.exposeString('EventInSiteURL'),
-    items: t.exposeStringList('EventItems'),
+    items: t.field({
+      type: ['EventItem'],
+      resolve: async (parent, _, context) => {
+        const res = await fetch(`${BASE_URL}/events/${parent.EventId}?EventItems=1&EventItemAttachments=1&token=${context.legistarApiToken}`)
+        const resJson = await res.json()
+        return resJson['EventItems']
+      }
+    }),
   })
 })
+
+builder.objectType('MatterAttachment', {
+  description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusMatterAttachment",
+  fields: t => ({
+    id: t.exposeString('MatterAttachmentId'),
+    name: t.exposeString('MatterAttachmentName'),
+    link: t.exposeString('MatterAttachmentHyperlink') 
+  })
+})
+
+builder.objectType('EventItem', {
+  description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusEventItem",
+  fields: t => ({
+    id: t.exposeString('EventItemId'),
+    transcripts: t.field({
+      type: ['MatterAttachment'],
+      nullable: true,
+      resolve: (parent) => {
+        if(parent.EventItemMatterAttachments) {
+          return parent.EventItemMatterAttachments.filter(a => a.MatterAttachmentName.toLowerCase().includes('transcript'))
+        }
+        return null
+      }
+    }),
+    attachments: t.field({
+      type: ['MatterAttachment'],
+      nullable: true,
+      resolve: (parent) =>{
+        return parent.EventItemMatterAttachments
+      }
+    })
+  })
+})
+
 
 builder.objectType('CouncilMember', {
   description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusPerson",
