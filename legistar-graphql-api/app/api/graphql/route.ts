@@ -87,68 +87,6 @@ builder.objectType('EventItem', {
   })
 })
 
-
-builder.objectType('CouncilMember', {
-  description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusPerson",
-  fields: (t) => ({
-    id: t.exposeInt('PersonId'),
-    guid: t.exposeString('PersonGuid'),
-    lastModifiedAt: t.exposeString('PersonLastModifiedUtc'),
-    rowVersion: t.exposeString('PersonRowVersion'),
-    firstName: t.exposeString('PersonFirstName'),
-    lastName: t.exposeString('PersonLastName'),
-    fullName: t.exposeString('PersonFullName'),
-    activeFlag: t.exposeInt('PersonActiveFlag'),
-    canViewFlag: t.exposeInt('PersonCanViewFlag'),
-    usedSponsorFlag: t.exposeInt('PersonUsedSponsorFlag'),
-    address1: t.exposeString('PersonAddress1'),
-    city1: t.exposeString('PersonCity1'),
-    state1: t.exposeString('PersonState1'),
-    zip1: t.exposeString('PersonZip1'),
-    phone: t.exposeString('PersonPhone'),
-    fax: t.exposeString('PersonFax'),
-    email: t.exposeString('PersonEmail', { nullable: true }),
-    www: t.exposeString('PersonWWW'),
-    address2: t.exposeString('PersonAddress2', { nullable: true }),
-    city2: t.exposeString('PersonCity2', { nullable: true }),
-    state2: t.exposeString('PersonState2', { nullable: true }),
-    zip2: t.exposeString('PersonZip2', { nullable: true }),
-    phone2: t.exposeString('PersonPhone2', { nullable: true }),
-    fax2: t.exposeString('PersonFax2', { nullable: true }),
-    email2: t.exposeString('PersonEmail2', { nullable: true }),
-    www2: t.exposeString('PersonWWW2', { nullable: true }),
-  })
-})
-
-builder.objectType('OfficeRecord', {
-  description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusOfficeRecord",
-  fields: (t) => ({
-    id: t.exposeInt('OfficeRecordId'),
-    guid: t.exposeString('OfficeRecordGuid'),
-    lastModifiedAt: t.exposeString('OfficeRecordLastModifiedUtc'),
-    rowVersion: t.exposeString('OfficeRecordRowVersion'),
-    firstName: t.exposeString('OfficeRecordFirstName'),
-    lastName: t.exposeString('OfficeRecordLastName'),
-    email: t.exposeString('OfficeRecordEmail', { nullable: true }),
-    fullName: t.exposeString('OfficeRecordFullName'),
-    startDate: t.exposeString('OfficeRecordStartDate'),
-    endDate: t.exposeString('OfficeRecordEndDate', { nullable: true }),
-    sort: t.exposeInt('OfficeRecordSort'),
-    personId: t.exposeInt('OfficeRecordPersonId'),
-    bodyId: t.exposeInt('OfficeRecordBodyId'),
-    bodyName: t.exposeString('OfficeRecordBodyName'),
-    title: t.exposeString('OfficeRecordTitle'),
-    voteDivider: t.exposeInt('OfficeRecordVoteDivider'),
-    extendFlag: t.exposeInt('OfficeRecordExtendFlag'),
-    memberTypeId: t.exposeInt('OfficeRecordMemberTypeId'),
-    memberType: t.exposeString('OfficeRecordMemberType'),
-    supportNameId: t.exposeInt('OfficeRecordSupportNameId', { nullable: true }),
-    supportFullName: t.exposeString('OfficeRecordSupportFullName', { nullable: true }),
-    extraText: t.exposeString('OfficeRecordExtraText', { nullable: true }),
-  })
-})
-
-
 builder.objectType('CouncilMember', {
   description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusPerson",
   fields: (t) => ({
