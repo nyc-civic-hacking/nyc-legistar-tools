@@ -1,8 +1,8 @@
 import { GranicusEvent, GranicusOfficeRecord, GranicusPerson } from "@/legistar/types"
 import { filterByYear, orderBy, } from "@/legistar/utils"
 import { get } from '../legistar'
-import { OrderByEnumValue } from "./types"
-import { parseYearArg } from "./utils"
+import { OrderByEnumValue, Transcript } from "./types"
+import { createTranscriptList, parseYearArg } from "./utils"
 import { BASE_URL } from "../legistar/constants"
 
 export async function events(args: {
@@ -23,8 +23,21 @@ export async function events(args: {
     orderByParam,
     token: args.token
   })
-  console.log(events[0]);
   return events
+}
+
+export async function transcripts(args: {
+  yearArg: string,
+  orderByArg?: OrderByEnumValue | null,
+  token: string
+}): Promise<Transcript[]> {
+  const eventsReturned = await events({
+    yearArg: args.yearArg,
+    orderByArg: args.orderByArg,
+    token: args.token
+  })
+
+  return(createTranscriptList(eventsReturned, args.token))
 }
 
 export async function activePersons(token: string) {

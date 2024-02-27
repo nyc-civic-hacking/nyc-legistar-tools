@@ -2,9 +2,9 @@ import { YogaInitialContext, createSchema, createYoga } from 'graphql-yoga';
 import SchemaBuilder from '@pothos/core';
 import { ORDER_BY_ENUM_VALUES, YEAR_ENUM_VALUES } from '@/graphql/constants';
 import { OrderByEnumValue } from '@/graphql/types';
-import { activePersons, events, officeRecords, persons } from '@/graphql/resolvers';
+import { activePersons, events, transcripts, officeRecords, persons } from '@/graphql/resolvers';
 import { GranicusEvent, GranicusEventItem, GranicusMatterAttachment, GranicusOfficeRecord, GranicusPerson } from '@/legistar/types';
-import { get } from '@/legistar';
+import { Transcript } from '@/graphql/types';
 import { BASE_URL } from "@/legistar/constants"
 import { zipObject } from 'lodash';
 
@@ -28,7 +28,7 @@ function getContext(initial: YogaInitialContext): Context {
   return { legistarApiToken }
 }
 
-const builder = new SchemaBuilder<{ Context: Context, Objects: { Event: GranicusEvent, MatterAttachment: GranicusMatterAttachment, EventItem: GranicusEventItem, CouncilMember: GranicusPerson, OfficeRecord: GranicusOfficeRecord } }>({});
+const builder = new SchemaBuilder<{ Context: Context, Objects: { Event: GranicusEvent, MatterAttachment: GranicusMatterAttachment, EventItem: GranicusEventItem, Transcript: Transcript, CouncilMember: GranicusPerson, OfficeRecord: GranicusOfficeRecord } }>({});
 
 builder.objectType('Event', {
   description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusEvent",
@@ -77,16 +77,6 @@ builder.objectType('EventItem', {
   description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusEventItem",
   fields: t => ({
     id: t.exposeString('EventItemId'),
-    transcripts: t.field({
-      type: ['MatterAttachment'],
-      nullable: true,
-      resolve: (parent) => {
-        if(parent.EventItemMatterAttachments) {
-          return parent.EventItemMatterAttachments.filter(a => a.MatterAttachmentName.toLowerCase().includes('transcript'))
-        }
-        return null
-      }
-    }),
     attachments: t.field({
       type: ['MatterAttachment'],
       nullable: true,
@@ -159,6 +149,76 @@ builder.objectType('OfficeRecord', {
 })
 
 
+builder.objectType('CouncilMember', {
+  description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusPerson",
+  fields: (t) => ({
+    id: t.exposeInt('PersonId'),
+    guid: t.exposeString('PersonGuid'),
+    lastModifiedAt: t.exposeString('PersonLastModifiedUtc'),
+    rowVersion: t.exposeString('PersonRowVersion'),
+    firstName: t.exposeString('PersonFirstName'),
+    lastName: t.exposeString('PersonLastName'),
+    fullName: t.exposeString('PersonFullName'),
+    activeFlag: t.exposeInt('PersonActiveFlag'),
+    canViewFlag: t.exposeInt('PersonCanViewFlag'),
+    usedSponsorFlag: t.exposeInt('PersonUsedSponsorFlag'),
+    address1: t.exposeString('PersonAddress1'),
+    city1: t.exposeString('PersonCity1'),
+    state1: t.exposeString('PersonState1'),
+    zip1: t.exposeString('PersonZip1'),
+    phone: t.exposeString('PersonPhone'),
+    fax: t.exposeString('PersonFax'),
+    email: t.exposeString('PersonEmail', { nullable: true }),
+    www: t.exposeString('PersonWWW'),
+    address2: t.exposeString('PersonAddress2', { nullable: true }),
+    city2: t.exposeString('PersonCity2', { nullable: true }),
+    state2: t.exposeString('PersonState2', { nullable: true }),
+    zip2: t.exposeString('PersonZip2', { nullable: true }),
+    phone2: t.exposeString('PersonPhone2', { nullable: true }),
+    fax2: t.exposeString('PersonFax2', { nullable: true }),
+    email2: t.exposeString('PersonEmail2', { nullable: true }),
+    www2: t.exposeString('PersonWWW2', { nullable: true }),
+  })
+})
+
+builder.objectType('OfficeRecord', {
+  description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusOfficeRecord",
+  fields: (t) => ({
+    id: t.exposeInt('OfficeRecordId'),
+    guid: t.exposeString('OfficeRecordGuid'),
+    lastModifiedAt: t.exposeString('OfficeRecordLastModifiedUtc'),
+    rowVersion: t.exposeString('OfficeRecordRowVersion'),
+    firstName: t.exposeString('OfficeRecordFirstName'),
+    lastName: t.exposeString('OfficeRecordLastName'),
+    email: t.exposeString('OfficeRecordEmail', { nullable: true }),
+    fullName: t.exposeString('OfficeRecordFullName'),
+    startDate: t.exposeString('OfficeRecordStartDate'),
+    endDate: t.exposeString('OfficeRecordEndDate', { nullable: true }),
+    sort: t.exposeInt('OfficeRecordSort'),
+    personId: t.exposeInt('OfficeRecordPersonId'),
+    bodyId: t.exposeInt('OfficeRecordBodyId'),
+    bodyName: t.exposeString('OfficeRecordBodyName'),
+    title: t.exposeString('OfficeRecordTitle'),
+    voteDivider: t.exposeInt('OfficeRecordVoteDivider'),
+    extendFlag: t.exposeInt('OfficeRecordExtendFlag'),
+    memberTypeId: t.exposeInt('OfficeRecordMemberTypeId'),
+    memberType: t.exposeString('OfficeRecordMemberType'),
+    supportNameId: t.exposeInt('OfficeRecordSupportNameId', { nullable: true }),
+    supportFullName: t.exposeString('OfficeRecordSupportFullName', { nullable: true }),
+    extraText: t.exposeString('OfficeRecordExtraText', { nullable: true }),
+  })
+})
+
+builder.objectType('Transcript', {
+  description: "A custom type of MatterAttachment. Specifically those with 'transcript' in the name.",
+  fields: t => ({
+    id: t.exposeString('Id'),
+    name: t.exposeString('Name'),
+    date: t.exposeString('Date'),
+    url: t.exposeString('Url') 
+  })
+})
+
 const YearEnum = builder.enumType('Year', {
   // creates an array of year strings formatted like Y2015 for years from 1999 to 2024
   values: YEAR_ENUM_VALUES
@@ -187,6 +247,29 @@ builder.queryType({
         const token = context.legistarApiToken
         if (!token) return []
         return events({
+          yearArg: args.year,
+          orderByArg: args.orderBy,
+          token
+        })
+      }
+    }),
+    transcripts: t.field({
+      args: {
+        year: t.arg({
+          description: "Years that the city council has been in session",
+          type: YearEnum,
+          required: true
+        }),
+        orderBy: t.arg({
+          description: "Field and direction to order by",
+          type: OrderByEnum
+        })
+      },
+      type: ['Transcript'],
+      resolve: async (_, args, context) => {
+        const token = context.legistarApiToken
+        if (!token) return []
+        return transcripts({
           yearArg: args.year,
           orderByArg: args.orderBy,
           token
@@ -231,6 +314,5 @@ const { handleRequest } = createYoga({
   schema: builder.toSchema(),
   context: getContext
 });
-
 
 export { handleRequest as GET, handleRequest as POST, handleRequest as OPTIONS }
