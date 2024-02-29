@@ -1,0 +1,48 @@
+export interface GranicusEvent {
+  EventId: number
+  EventGuid: string,
+  EventLastModifiedUtc: string,
+  EventBodyId: number,
+  EventBodyName: string,
+  EventDate: string,
+  EventTime: string,
+  EventVideoStatus: string,
+  EventVideoPath: string | null,
+  EventAgendaStatusId: number,
+  EventAgendaStatusName: string,
+  EventMinutesStatusId: number,
+  EventMinutesStatusName: string,
+  EventLocation: string,
+  EventAgendaFile: string,
+  EventMinutesFile: string | null,
+  EventAgendaLastPublishedUTC: string,
+  EventMinutesLastPublishedUTC: string | null,
+  EventComment: string | null,
+  EventInSiteURL: string,
+  EventItems: []
+}
+
+export interface GranicusOfficeRecord {
+  OfficeRecordId: number,
+  OfficeRecordGuid: string,
+  OfficeRecordLastModifiedUtc: string,
+  OfficeRecordRowVersion: string,
+  OfficeRecordFirstName: string,
+  OfficeRecordLastName: string,
+  OfficeRecordEmail: string,
+  OfficeRecordFullName: string,
+  OfficeRecordStartDate: string,
+  OfficeRecordEndDate: string,
+  OfficeRecordSort: number,
+  OfficeRecordPersonId: number,
+  OfficeRecordBodyId: number,
+  OfficeRecordBodyName: string,
+  OfficeRecordTitle: string,
+  OfficeRecordVoteDivider: number,
+  OfficeRecordExtendFlag: number,
+  OfficeRecordMemberTypeId: number,
+  OfficeRecordMemberType: string,
+  OfficeRecordSupportNameId: number | null,
+  OfficeRecordSupportFullName: string | null,
+  OfficeRecordExtraText: string | null
+}
