@@ -127,6 +127,29 @@ const OrderByEnum = builder.enumType('OrderBy', {
 
 builder.queryType({
   fields: (t) => ({
+    officeRecords: t.field({
+      type: ['OfficeRecord'],
+      args: {
+        year: t.arg({
+          description: "Years that the city council has been in session",
+          type: YearEnum,
+          required: true
+        }),
+        orderBy: t.arg({
+          description: "Field and direction to order by",
+          type: OrderByEnum
+        })
+      },
+      resolve: async (_, args, context) => {
+        const token = context.legistarApiToken
+        if (!token) return []
+        return officeRecords({
+          yearArg: args.year,
+          orderByArg: args.orderBy,
+          token
+        })
+      }
+    }),
     events: t.field({
       args: {
         year: t.arg({
