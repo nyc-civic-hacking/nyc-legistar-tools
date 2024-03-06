@@ -2,7 +2,7 @@ import { YogaInitialContext, createYoga } from 'graphql-yoga';
 import SchemaBuilder from '@pothos/core';
 import { MONTH_ENUM_VALUES, ORDER_BY_ENUM_VALUES, YEAR_ENUM_VALUES } from '@/graphql/constants';
 import { OrderByEnumValue } from '@/graphql/types';
-import { activePersons, events, transcripts, officeRecords, persons } from '@/graphql/resolvers';
+import { activePersons, events, transcripts, officeRecords, persons, otherOfficeRecords } from '@/graphql/resolvers';
 import { GranicusEvent, GranicusEventItem, GranicusMatterAttachment, GranicusOfficeRecord, GranicusPerson } from '@/legistar/types';
 import { Transcript } from '@/graphql/types';
 import { BASE_URL } from "@/legistar/constants"
@@ -150,11 +150,11 @@ builder.objectType('OfficeRecord', {
 builder.objectType('Transcript', {
   description: "A custom type of MatterAttachment. Specifically those with 'transcript' in the name.",
   fields: t => ({
-    Id: t.exposeString('Id'),
-    Name: t.exposeString('Name'),
-    Date: t.exposeString('Date'),
-    Link: t.exposeString('Link'),
-    Events: t.exposeIntList('Events')
+    id: t.exposeString('Id'),
+    name: t.exposeString('Name'),
+    date: t.exposeString('Date'),
+    link: t.exposeString('Link'),
+    events: t.exposeIntList('Events')
   })
 })
 
@@ -189,7 +189,7 @@ builder.queryType({
       resolve: async (_, args, context) => {
         const token = context.legistarApiToken
         if (!token) return []
-        return officeRecords({
+        return otherOfficeRecords({
           yearArg: args.year,
           orderByArg: args.orderBy,
           token

@@ -73,7 +73,7 @@ export async function otherOfficeRecords(args: {
   if (!year) {
     return []
   }
-  const filterParam = filterByYear(year)
+  const filterParam = filterByTime(year)
   const orderByParam = orderBy(args.orderByArg)
 
   const officeRecords = await get<GranicusOfficeRecord[]>({

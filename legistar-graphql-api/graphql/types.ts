@@ -1,5 +1,3 @@
-import { GranicusEvent } from "@/legistar/types"
-
 export type OrderByEnumValue = 'date_asc' | 'date_dsc' 
 
 export type Transcript = {
