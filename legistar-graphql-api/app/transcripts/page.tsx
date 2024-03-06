@@ -1,55 +1,19 @@
 import React from "react";
 import { Transcript } from "@/graphql/types";
-import TranscriptInputs from "./components/TranscriptInput";
+import TranscriptInput from "./components/TranscriptInput";
 import { GET_TRANSCRIPTS_QUERY } from "./queries";
-
-interface TranscriptResponse {
-  data: {
-    transcripts: Transcript[];
-  };
-}
-
-const getTranscripts = async (
-  yearInput?: String,
-  monthInput?: String
-): Promise<Transcript[]> => {
-  "use server";
-  const year = yearInput ? yearInput : "Y" + new Date().getFullYear();
-  const month = monthInput
-    ? monthInput
-    : new Date().toLocaleString("default", { month: "long" });
-
-  const graphqlQuery = {
-    query: GET_TRANSCRIPTS_QUERY,
-    variables: { year, month },
-  };
-  const response = await fetch("http://localhost:3000/api/graphql", {
-    method: "POST",
-    body: JSON.stringify(graphqlQuery),
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.LEGISTAR_API_TOKEN}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("GraphQL request failed");
-  }
-
-  const res: TranscriptResponse = await response.json();
-
-  return res.data.transcripts;
-};
+import TranscriptTable from "./components/TranscriptTable";
+import { getTranscripts } from "./actions";
 
 const Transcripts: React.FC = async () => {
-  const transcripts = await getTranscripts();
-
+  const formData = new FormData();
+  formData.set("year", "Y2024");
+  formData.set("month", "January");
+  const transcripts = await getTranscripts(formData);
   return (
     <>
-      <TranscriptInputs
-        initialTranscripts={transcripts}
-        getTranscripts={getTranscripts}
-      />
+      {/* <TranscriptInput /> */}
+      <TranscriptTable transcripts={transcripts} />
     </>
   );
 };
