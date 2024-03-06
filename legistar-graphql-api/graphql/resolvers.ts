@@ -1,12 +1,13 @@
 import { GranicusEvent, GranicusOfficeRecord, GranicusPerson } from "@/legistar/types"
-import { filterByYear, orderBy, } from "@/legistar/utils"
+import { filterByTime, orderBy, } from "@/legistar/utils"
 import { get } from '../legistar'
 import { OrderByEnumValue, Transcript } from "./types"
-import { createTranscriptList, parseYearArg } from "./utils"
+import { createTranscriptList, parseMonthArg, parseYearArg } from "./utils"
 import { BASE_URL } from "../legistar/constants"
 
 export async function events(args: {
   yearArg: string,
+  monthArg?: string | null,
   orderByArg?: OrderByEnumValue | null,
   token: string
 }): Promise<GranicusEvent[]> {
@@ -14,7 +15,9 @@ export async function events(args: {
   if (!year) {
     return []
   }
-  const filterParam = filterByYear(year)
+  const month = args.monthArg ? parseMonthArg(args.monthArg) : undefined
+
+  const filterParam = filterByTime(year, month)
   const orderByParam = orderBy(args.orderByArg)
 
   const events = await get<GranicusEvent[]>({
@@ -28,11 +31,13 @@ export async function events(args: {
 
 export async function transcripts(args: {
   yearArg: string,
+  monthArg?: string | null,
   orderByArg?: OrderByEnumValue | null,
   token: string
 }): Promise<Transcript[]> {
   const eventsReturned = await events({
     yearArg: args.yearArg,
+    monthArg: args.monthArg,
     orderByArg: args.orderByArg,
     token: args.token
   })
@@ -50,11 +55,9 @@ export async function persons(token: string, filterString?: string): Promise<Gra
   if (filterString) {
     params.append('$filter', filterString);
   }
-  console.log(params.toString())
   const res = await fetch(`${BASE_URL}/persons?${params.toString()}`)
   return res.json()
 }
-
 
 export async function officeRecords(personId: number, token: string): Promise<GranicusOfficeRecord[]> {
   const res = await fetch(`${BASE_URL}/persons/${personId}/officerecords?token=${token}`)

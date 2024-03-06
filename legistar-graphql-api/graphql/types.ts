@@ -4,5 +4,5 @@ export type Transcript = {
     Id: string;
     Name: string;
     Date: string;
-    Url: string;
+    Link: string;
 }

@@ -1,6 +1,6 @@
-import { YogaInitialContext, createSchema, createYoga } from 'graphql-yoga';
+import { YogaInitialContext, createYoga } from 'graphql-yoga';
 import SchemaBuilder from '@pothos/core';
-import { ORDER_BY_ENUM_VALUES, YEAR_ENUM_VALUES } from '@/graphql/constants';
+import { MONTH_ENUM_VALUES, ORDER_BY_ENUM_VALUES, YEAR_ENUM_VALUES } from '@/graphql/constants';
 import { OrderByEnumValue } from '@/graphql/types';
 import { activePersons, events, transcripts, officeRecords, persons } from '@/graphql/resolvers';
 import { GranicusEvent, GranicusEventItem, GranicusMatterAttachment, GranicusOfficeRecord, GranicusPerson } from '@/legistar/types';
@@ -24,7 +24,7 @@ function getBearerTokenFromRequest(request: Request): string | null {
 }
 
 function getContext(initial: YogaInitialContext): Context {
-  const legistarApiToken = getBearerTokenFromRequest(initial.request)
+  const legistarApiToken = process.env.NODE_ENV === 'development' && process.env.TOKEN ? process.env.TOKEN : getBearerTokenFromRequest(initial.request)
   return { legistarApiToken }
 }
 
@@ -150,16 +150,20 @@ builder.objectType('OfficeRecord', {
 builder.objectType('Transcript', {
   description: "A custom type of MatterAttachment. Specifically those with 'transcript' in the name.",
   fields: t => ({
-    id: t.exposeString('Id'),
-    name: t.exposeString('Name'),
-    date: t.exposeString('Date'),
-    url: t.exposeString('Url') 
+    Id: t.exposeString('Id'),
+    Name: t.exposeString('Name'),
+    Date: t.exposeString('Date'),
+    Link: t.exposeString('Link') 
   })
 })
 
 const YearEnum = builder.enumType('Year', {
   // creates an array of year strings formatted like Y2015 for years from 1999 to 2024
   values: YEAR_ENUM_VALUES
+});
+
+const MonthEnum = builder.enumType('Month', {
+  values: MONTH_ENUM_VALUES
 });
 
 const OrderByEnum = builder.enumType('OrderBy', {
@@ -175,6 +179,10 @@ builder.queryType({
           type: YearEnum,
           required: true
         }),
+        month: t.arg({
+          description: "Month",
+          type: MonthEnum,
+        }),
         orderBy: t.arg({
           description: "Field and direction to order by",
           type: OrderByEnum
@@ -186,6 +194,7 @@ builder.queryType({
         if (!token) return []
         return events({
           yearArg: args.year,
+          monthArg: args.month,
           orderByArg: args.orderBy,
           token
         })
@@ -198,6 +207,10 @@ builder.queryType({
           type: YearEnum,
           required: true
         }),
+        month: t.arg({
+          description: "Month",
+          type: MonthEnum
+        }),
         orderBy: t.arg({
           description: "Field and direction to order by",
           type: OrderByEnum
@@ -209,6 +222,7 @@ builder.queryType({
         if (!token) return []
         return transcripts({
           yearArg: args.year,
+          monthArg: args.month,
           orderByArg: args.orderBy,
           token
         })

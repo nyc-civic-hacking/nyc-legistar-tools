@@ -1,8 +1,38 @@
 import { OrderByEnumValue } from "@/graphql/types"
 import { BASE_URL } from "./constants"
 
-export function filterByYear(year: number) {
-  return `EventDate ge datetime'${year}-01-01' and EventDate lt datetime'${year + 1}-01-01'`
+export function buildDateString(year: number, month?: number): string {
+  let startDate = year.toString()
+
+  if (month) {
+    if (month < 10) {
+      startDate += `-0${month}`
+    } else {
+      startDate += `-${month}`
+    }
+  } else {
+    startDate += `-01`
+  }
+
+  return startDate += `-01`
+}
+
+export function buildEndDateString(year: number, month?: number): string {
+  if (month) {
+    month++
+    if (month > 12) {
+      return buildDateString(year + 1, 1)
+    } else {
+      return buildDateString(year, month)
+    }
+  } else {
+    return buildDateString(year + 1, 1)
+  }
+}
+
+
+export function filterByTime(year: number, month?: number) {
+  return `EventDate ge datetime'${buildDateString(year, month)}' and EventDate lt datetime'${buildEndDateString(year, month)}'`
 }
 
 export function orderBy(orderBy?: OrderByEnumValue | null): string | undefined {
@@ -25,10 +55,10 @@ export function buildUrl(args: {
   const queryParams = new URLSearchParams({
     $filter: args.filterParam,
     token: args.token
-  });
+  })
 
   if (args.orderByParam) {
-    queryParams.append('$orderby', args.orderByParam);
+    queryParams.append('$orderby', args.orderByParam)
   }
 
 
