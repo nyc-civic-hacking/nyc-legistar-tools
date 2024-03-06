@@ -21,7 +21,7 @@
     "react-dom": "^18",
     "tailwindcss": "latest",
     "react-aria": "^3.32.1",
-    "react-aria-components": "^1.1.1",
+    "react-aria-components": "^1.1.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.202",
