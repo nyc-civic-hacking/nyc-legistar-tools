@@ -63,3 +63,25 @@ export async function officeRecords(personId: number, token: string): Promise<Gr
   const res = await fetch(`${BASE_URL}/persons/${personId}/officerecords?token=${token}`)
   return res.json()
 }
+
+export async function otherOfficeRecords(args: {
+  yearArg: string,
+  orderByArg?: OrderByEnumValue | null,
+  token: string
+}): Promise<GranicusOfficeRecord[]> {
+  const year = parseYearArg(args.yearArg)
+  if (!year) {
+    return []
+  }
+  const filterParam = filterByYear(year)
+  const orderByParam = orderBy(args.orderByArg)
+
+  const officeRecords = await get<GranicusOfficeRecord[]>({
+    endpoint: '/OfficeRecords',
+    filterParam,
+    orderByParam,
+    token: args.token
+  })
+  console.log(officeRecords)
+  return officeRecords
+}
