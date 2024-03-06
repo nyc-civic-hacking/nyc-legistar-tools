@@ -153,7 +153,8 @@ builder.objectType('Transcript', {
     Id: t.exposeString('Id'),
     Name: t.exposeString('Name'),
     Date: t.exposeString('Date'),
-    Link: t.exposeString('Link') 
+    Link: t.exposeString('Link'),
+    Events: t.exposeIntList('Events')
   })
 })
 

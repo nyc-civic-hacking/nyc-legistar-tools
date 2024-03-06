@@ -43,7 +43,7 @@ export function combineDateAndTime(event: GranicusEvent): string {
 
 // Creates a list of Transcripts from a list of GranicusEvents
 export async function createTranscriptList(events: GranicusEvent[], token: string): Promise<Transcript[]> {
-  let transcripts: Transcript[] = []
+  let transcripts = new Map<string, Transcript>()
   for (const event of events) {
     const res = await fetch(`${BASE_URL}/events/${event.EventId}?EventItems=1&EventItemAttachments=1&token=${token}`)
     const resJson = await res.json()
@@ -52,17 +52,22 @@ export async function createTranscriptList(events: GranicusEvent[], token: strin
       if (eventItem?.EventItemMatterAttachments.length > 0) {
         for (const eventItemMatterAttachment of eventItem.EventItemMatterAttachments) {
           if (eventItemMatterAttachment?.MatterAttachmentName.toLowerCase().includes('transcript')) {
-            transcripts.push({
-              Id: eventItemMatterAttachment.MatterAttachmentId,
-              Name: eventItemMatterAttachment.MatterAttachmentName,
-              Date: combineDateAndTime(event),
-              Link: eventItemMatterAttachment.MatterAttachmentHyperlink
-            })
+            if (transcripts.has(eventItemMatterAttachment.MatterAttachmentId)) {
+              transcripts.get(eventItemMatterAttachment.MatterAttachmentId)?.Events.push(event.EventId)
+            } else {
+              transcripts.set(eventItemMatterAttachment.MatterAttachmentId, {
+                Id: eventItemMatterAttachment.MatterAttachmentId,
+                Name: eventItemMatterAttachment.MatterAttachmentName,
+                Date: combineDateAndTime(event),
+                Link: eventItemMatterAttachment.MatterAttachmentHyperlink,
+                Events: [event.EventId]
+              })
+            }
           }
         }
       }
     }
   }
 
-  return transcripts
+  return Array.from(transcripts.values())
 }

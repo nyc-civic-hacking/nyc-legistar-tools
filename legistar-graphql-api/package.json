@@ -9,10 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@apollo/client": "rc",
-    "@apollo/experimental-nextjs-app-support": "^0.8.0",
-    "@headlessui/react": "^1.7.18",
-    "@heroicons/react": "^2.1.1",
     "@pothos/core": "^3.41.0",
     "graphql-yoga": "^5.1.1",
     "lodash": "^4.17.21",
