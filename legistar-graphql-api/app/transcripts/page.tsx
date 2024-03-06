@@ -1,7 +1,7 @@
 import React from "react";
 import { Transcript } from "@/graphql/types";
 import TranscriptInputs from "./components/TranscriptInput";
-import { GET_TRANSCRIPTS_QUERY } from "./queries/queries";
+import { GET_TRANSCRIPTS_QUERY } from "./queries";
 
 interface TranscriptResponse {
   data: {
