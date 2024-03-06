@@ -1,11 +1,8 @@
 "use client";
 
-import { useFetcher } from "next/navigation";
 import React from "react";
 
-const TranscriptInputs: React.FC = () => {
-  const fetcher = useFetcher();
-
+export const TranscriptFilterForm: React.FC = () => {
   return (
     <>
       <select name="year">
@@ -32,5 +29,3 @@ const TranscriptInputs: React.FC = () => {
     </>
   );
 };
-
-export default TranscriptInputs;
