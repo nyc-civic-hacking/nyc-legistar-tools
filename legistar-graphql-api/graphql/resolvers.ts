@@ -82,6 +82,5 @@ export async function otherOfficeRecords(args: {
     orderByParam,
     token: args.token
   })
-  console.log(officeRecords)
   return officeRecords
 }

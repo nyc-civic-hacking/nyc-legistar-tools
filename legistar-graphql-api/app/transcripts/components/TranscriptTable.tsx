@@ -47,7 +47,6 @@ const TranscriptTable: React.FC<TranscriptTableProps> = ({
       </TableBody>
     </Table>
   );
-
 };
 
 export default TranscriptTable

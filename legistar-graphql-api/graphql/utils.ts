@@ -53,7 +53,10 @@ export async function createTranscriptList(events: GranicusEvent[], token: strin
         for (const eventItemMatterAttachment of eventItem.EventItemMatterAttachments) {
           if (eventItemMatterAttachment?.MatterAttachmentName.toLowerCase().includes('transcript')) {
             if (transcripts.has(eventItemMatterAttachment.MatterAttachmentName)) {
-              transcripts.get(eventItemMatterAttachment.MatterAttachmentName)?.events.push(event.EventId)
+              const transcript = transcripts.get(eventItemMatterAttachment.MatterAttachmentName)
+              if (transcript && !transcript.events.includes(event.EventId)) {
+                transcript.events.push(event.EventId)
+              }
             } else {
               transcripts.set(eventItemMatterAttachment.MatterAttachmentName, {
                 name: eventItemMatterAttachment.MatterAttachmentName,
@@ -67,6 +70,5 @@ export async function createTranscriptList(events: GranicusEvent[], token: strin
       }
     }
   }
-
   return Array.from(transcripts.values())
 }
