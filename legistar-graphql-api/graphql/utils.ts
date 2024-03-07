@@ -52,11 +52,10 @@ export async function createTranscriptList(events: GranicusEvent[], token: strin
       if (eventItem?.EventItemMatterAttachments.length > 0) {
         for (const eventItemMatterAttachment of eventItem.EventItemMatterAttachments) {
           if (eventItemMatterAttachment?.MatterAttachmentName.toLowerCase().includes('transcript')) {
-            if (transcripts.has(eventItemMatterAttachment.MatterAttachmentId)) {
-              transcripts.get(eventItemMatterAttachment.MatterAttachmentId)?.events.push(event.EventId)
+            if (transcripts.has(eventItemMatterAttachment.MatterAttachmentName)) {
+              transcripts.get(eventItemMatterAttachment.MatterAttachmentName)?.events.push(event.EventId)
             } else {
-              transcripts.set(eventItemMatterAttachment.MatterAttachmentId, {
-                id: eventItemMatterAttachment.MatterAttachmentId,
+              transcripts.set(eventItemMatterAttachment.MatterAttachmentName, {
                 name: eventItemMatterAttachment.MatterAttachmentName,
                 date: combineDateAndTime(event),
                 link: eventItemMatterAttachment.MatterAttachmentHyperlink,

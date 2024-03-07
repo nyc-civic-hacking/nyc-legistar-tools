@@ -13,7 +13,7 @@ type TranscriptTableProps = {
 
 interface TranscriptColumn {
   name: string;
-  id: 'Name' | 'Date' | 'Link';
+  id: 'name' | 'date' | 'link';
   isRowHeader?: boolean;
 }
 
@@ -22,12 +22,12 @@ const TranscriptTable: React.FC<TranscriptTableProps> = ({
 }) => {
 
   let columns: TranscriptColumn[] = [
-    { name: 'Name', id: 'Name', isRowHeader: true },
-    { name: 'Date', id: 'Date' },
-    { name: 'Link', id: 'Link' }
+    { name: 'Name', id: 'name', isRowHeader: true },
+    { name: 'Date', id: 'date' },
+    { name: 'Link', id: 'link' }
   ];
 
-  let rows = transcripts.map(transcript => ({ ...transcript, id: transcript.Id }));
+  let rows = transcripts.map(transcript => ({ ...transcript }));
 
   return (
     <Table className="table table-xs" aria-label="Files">
