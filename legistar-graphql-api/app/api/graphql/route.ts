@@ -2,7 +2,7 @@ import { YogaInitialContext, createYoga } from 'graphql-yoga';
 import SchemaBuilder from '@pothos/core';
 import { MONTH_ENUM_VALUES, ORDER_BY_ENUM_VALUES, YEAR_ENUM_VALUES } from '@/graphql/constants';
 import { OrderByEnumValue } from '@/graphql/types';
-import { activePersons, events, transcripts, officeRecords, persons } from '@/graphql/resolvers';
+import { activePersons, events, transcripts, officeRecords, persons, otherOfficeRecords } from '@/graphql/resolvers';
 import { GranicusEvent, GranicusEventItem, GranicusMatterAttachment, GranicusOfficeRecord, GranicusPerson } from '@/legistar/types';
 import { Transcript } from '@/graphql/types';
 import { BASE_URL } from "@/legistar/constants"
@@ -150,10 +150,10 @@ builder.objectType('OfficeRecord', {
 builder.objectType('Transcript', {
   description: "A custom type of MatterAttachment. Specifically those with 'transcript' in the name.",
   fields: t => ({
-    Id: t.exposeString('Id'),
-    Name: t.exposeString('Name'),
-    Date: t.exposeString('Date'),
-    Link: t.exposeString('Link') 
+    name: t.exposeString('name'),
+    date: t.exposeString('date'),
+    link: t.exposeString('link'),
+    events: t.exposeIntList('events')
   })
 })
 
@@ -172,6 +172,29 @@ const OrderByEnum = builder.enumType('OrderBy', {
 
 builder.queryType({
   fields: (t) => ({
+    officeRecords: t.field({
+      type: ['OfficeRecord'],
+      args: {
+        year: t.arg({
+          description: "Years that the city council has been in session",
+          type: YearEnum,
+          required: true
+        }),
+        orderBy: t.arg({
+          description: "Field and direction to order by",
+          type: OrderByEnum
+        })
+      },
+      resolve: async (_, args, context) => {
+        const token = context.legistarApiToken
+        if (!token) return []
+        return otherOfficeRecords({
+          yearArg: args.year,
+          orderByArg: args.orderBy,
+          token
+        })
+      }
+    }),
     events: t.field({
       args: {
         year: t.arg({
