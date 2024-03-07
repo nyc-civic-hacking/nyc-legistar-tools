@@ -6,4 +6,4 @@ query GetTranscripts($year: Year!, $month: Month!) {
         Date
         Link
     }
-}`
+}`;
