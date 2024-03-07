@@ -18,7 +18,7 @@ export async function getTranscripts(formData: FormData) {
     variables: { year, month },
   };
 
-  const response = await fetch("http://localhost:3000/api/graphql", {
+  const response = await fetch("http://localhost:4000/api/graphql", {
     method: "POST",
     body: JSON.stringify(graphqlQuery),
     headers: {

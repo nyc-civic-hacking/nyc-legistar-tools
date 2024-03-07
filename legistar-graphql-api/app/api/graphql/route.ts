@@ -150,11 +150,10 @@ builder.objectType('OfficeRecord', {
 builder.objectType('Transcript', {
   description: "A custom type of MatterAttachment. Specifically those with 'transcript' in the name.",
   fields: t => ({
-    id: t.exposeString('Id'),
-    name: t.exposeString('Name'),
-    date: t.exposeString('Date'),
-    link: t.exposeString('Link'),
-    events: t.exposeIntList('Events')
+    name: t.exposeString('name'),
+    date: t.exposeString('date'),
+    link: t.exposeString('link'),
+    events: t.exposeIntList('events')
   })
 })
 

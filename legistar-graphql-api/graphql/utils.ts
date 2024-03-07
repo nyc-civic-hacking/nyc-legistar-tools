@@ -52,15 +52,17 @@ export async function createTranscriptList(events: GranicusEvent[], token: strin
       if (eventItem?.EventItemMatterAttachments.length > 0) {
         for (const eventItemMatterAttachment of eventItem.EventItemMatterAttachments) {
           if (eventItemMatterAttachment?.MatterAttachmentName.toLowerCase().includes('transcript')) {
-            if (transcripts.has(eventItemMatterAttachment.MatterAttachmentId)) {
-              transcripts.get(eventItemMatterAttachment.MatterAttachmentId)?.Events.push(event.EventId)
+            if (transcripts.has(eventItemMatterAttachment.MatterAttachmentName)) {
+              const transcript = transcripts.get(eventItemMatterAttachment.MatterAttachmentName)
+              if (transcript && !transcript.events.includes(event.EventId)) {
+                transcript.events.push(event.EventId)
+              }
             } else {
-              transcripts.set(eventItemMatterAttachment.MatterAttachmentId, {
-                Id: eventItemMatterAttachment.MatterAttachmentId,
-                Name: eventItemMatterAttachment.MatterAttachmentName,
-                Date: combineDateAndTime(event),
-                Link: eventItemMatterAttachment.MatterAttachmentHyperlink,
-                Events: [event.EventId]
+              transcripts.set(eventItemMatterAttachment.MatterAttachmentName, {
+                name: eventItemMatterAttachment.MatterAttachmentName,
+                date: combineDateAndTime(event),
+                link: eventItemMatterAttachment.MatterAttachmentHyperlink,
+                events: [event.EventId]
               })
             }
           }
@@ -68,6 +70,5 @@ export async function createTranscriptList(events: GranicusEvent[], token: strin
       }
     }
   }
-
   return Array.from(transcripts.values())
 }

@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-import type { Config } from 'tailwindcss'
-import daisyui from 'daisyui'
+import type { Config } from "tailwindcss";
+import daisyui from "daisyui";
 const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -14,6 +14,6 @@ const config: Config = {
     extend: {},
   },
   plugins: [daisyui],
-}
+};
 
 export default config;
