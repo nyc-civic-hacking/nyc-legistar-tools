@@ -57,7 +57,6 @@ function Filters() {
 export default function Index() {
   const data = useLoaderData();
   const navigation = useNavigation();
-  console.log(navigation);
   return (
     <>
       <Filters />
