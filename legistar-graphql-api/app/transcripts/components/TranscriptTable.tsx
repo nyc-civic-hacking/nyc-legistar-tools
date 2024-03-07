@@ -1,13 +1,15 @@
+'use client'
+
 "use client";
 
-import React from "react";
-import { Transcript } from "@/graphql/types";
+import React from 'react'
+import { Transcript } from '@/graphql/types'
 import { Table, TableBody, TableHeader, Column, Row, Cell } from "react-aria-components";
 import type { Column as _Column } from "@/app/council/page";
 
 type TranscriptTableProps = {
-  transcripts: Transcript[];
-};
+    transcripts: Transcript[]
+}
 
 interface TranscriptColumn {
   name: string;
@@ -48,4 +50,4 @@ const TranscriptTable: React.FC<TranscriptTableProps> = ({
 
 };
 
-export default TranscriptTable;
+export default TranscriptTable

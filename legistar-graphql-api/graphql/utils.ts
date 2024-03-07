@@ -53,14 +53,14 @@ export async function createTranscriptList(events: GranicusEvent[], token: strin
         for (const eventItemMatterAttachment of eventItem.EventItemMatterAttachments) {
           if (eventItemMatterAttachment?.MatterAttachmentName.toLowerCase().includes('transcript')) {
             if (transcripts.has(eventItemMatterAttachment.MatterAttachmentId)) {
-              transcripts.get(eventItemMatterAttachment.MatterAttachmentId)?.Events.push(event.EventId)
+              transcripts.get(eventItemMatterAttachment.MatterAttachmentId)?.events.push(event.EventId)
             } else {
               transcripts.set(eventItemMatterAttachment.MatterAttachmentId, {
-                Id: eventItemMatterAttachment.MatterAttachmentId,
-                Name: eventItemMatterAttachment.MatterAttachmentName,
-                Date: combineDateAndTime(event),
-                Link: eventItemMatterAttachment.MatterAttachmentHyperlink,
-                Events: [event.EventId]
+                id: eventItemMatterAttachment.MatterAttachmentId,
+                name: eventItemMatterAttachment.MatterAttachmentName,
+                date: combineDateAndTime(event),
+                link: eventItemMatterAttachment.MatterAttachmentHyperlink,
+                events: [event.EventId]
               })
             }
           }
