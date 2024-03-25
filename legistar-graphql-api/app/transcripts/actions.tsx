@@ -30,6 +30,7 @@ export async function getTranscripts(formData: FormData) {
   if (!response.ok) {
     throw new Error("GraphQL request failed");
   }
+  console.log(response);
 
   const res: TranscriptResponse = await response.json();
   return res.data.transcripts;

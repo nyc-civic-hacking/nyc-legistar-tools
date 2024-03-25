@@ -24,7 +24,7 @@ function getBearerTokenFromRequest(request: Request): string | null {
 }
 
 function getContext(initial: YogaInitialContext): Context {
-  const legistarApiToken = process.env.NODE_ENV === 'development' && process.env.TOKEN ? process.env.TOKEN : getBearerTokenFromRequest(initial.request)
+  const legistarApiToken = process.env.NODE_ENV === 'development' && process.env.LEGISTAR_API_TOKEN ? process.env.LEGISTAR_API_TOKEN : getBearerTokenFromRequest(initial.request)
   return { legistarApiToken }
 }
 
@@ -153,7 +153,12 @@ builder.objectType('Transcript', {
     name: t.exposeString('name'),
     date: t.exposeString('date'),
     link: t.exposeString('link'),
-    events: t.exposeIntList('events')
+    events: t.field({
+      type: ['Event'],
+      resolve: async (parent) => {
+        return parent.events
+      }
+    }),
   })
 })
 

@@ -2,6 +2,7 @@ import { GranicusEvent } from "@/legistar/types"
 import { Transcript } from "@/graphql/types"
 import { BASE_URL } from "@/legistar/constants"
 import { MONTH_ENUM_VALUES } from "./constants"
+import { DateInput } from "react-aria-components"
 
 export function parseYearArg(yearArg: string): number | undefined {
   // remove first character from an argument (ex. Y1999 -> 1999) then parse as int
@@ -22,7 +23,7 @@ export function parseMonthArg(monthArg: string): number | undefined {
 }
 
 // Combines the date and time from a GranicusEvent into one string
-export function combineDateAndTime(event: GranicusEvent): string {
+export function combineEventDateAndTime(event: GranicusEvent): string {
   const date = new Date(event.EventDate)
   const timeSplit = event.EventTime.split(' ')
   const ampm = timeSplit[1]
@@ -38,7 +39,25 @@ export function combineDateAndTime(event: GranicusEvent): string {
   const minutes = parseInt(hoursAndMinutes[1]) - minutesOffset
   date.setHours(hours, minutes)
 
-  return date.toJSON().split('.')[0]
+  return date.toJSON().split('T')[0]
+}
+
+function extractDateFromTranscriptName(transcriptName: string): string | null {
+  // Regular expression patterns for different date formats
+  const datePatterns = [
+    /(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/,  // M-D-YY, MM-DD-YY, M/D/YYYY, MM/DD/YYYY
+    /(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/   // M-D-YY, MM-DD-YY, M/D/YYYY, MM/DD/YYYY
+  ];
+
+  for (const pattern of datePatterns) {
+    const match = transcriptName.match(pattern);
+    if (match) {
+      const date = new Date(match[1]);
+      return date.toJSON().split('T')[0];
+    }
+  }
+
+  return null;  // Return null if no date is found
 }
 
 // Creates a list of Transcripts from a list of GranicusEvents
@@ -54,15 +73,16 @@ export async function createTranscriptList(events: GranicusEvent[], token: strin
           if (eventItemMatterAttachment?.MatterAttachmentName.toLowerCase().includes('transcript')) {
             if (transcripts.has(eventItemMatterAttachment.MatterAttachmentName)) {
               const transcript = transcripts.get(eventItemMatterAttachment.MatterAttachmentName)
-              if (transcript && !transcript.events.includes(event.EventId)) {
-                transcript.events.push(event.EventId)
+              if (transcript && !transcript.events.includes(event)) {
+                transcript.events.push(event)
               }
             } else {
+              const transcriptDate = extractDateFromTranscriptName(eventItemMatterAttachment.MatterAttachmentName)
               transcripts.set(eventItemMatterAttachment.MatterAttachmentName, {
                 name: eventItemMatterAttachment.MatterAttachmentName,
-                date: combineDateAndTime(event),
+                date: transcriptDate ? transcriptDate : combineEventDateAndTime(event),
                 link: eventItemMatterAttachment.MatterAttachmentHyperlink,
-                events: [event.EventId]
+                events: [event]
               })
             }
           }
