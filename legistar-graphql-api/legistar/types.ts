@@ -19,7 +19,18 @@ export interface GranicusEvent {
   EventMinutesLastPublishedUTC: string | null,
   EventComment: string | null,
   EventInSiteURL: string,
-  EventItems: []
+  EventItems: GranicusEventItem[]
+}
+
+export type GranicusMatterAttachment = {
+  MatterAttachmentId: string,
+  MatterAttachmentName: string,
+  MatterAttachmentHyperlink: string
+}
+
+export type GranicusEventItem = {
+  EventItemId: string,
+  EventItemMatterAttachments: GranicusMatterAttachment[]
 }
 
 export interface GranicusPerson {

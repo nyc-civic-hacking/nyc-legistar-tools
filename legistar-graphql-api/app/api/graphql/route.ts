@@ -1,9 +1,11 @@
-import { YogaInitialContext, createSchema, createYoga } from 'graphql-yoga';
+import { YogaInitialContext, createYoga } from 'graphql-yoga';
 import SchemaBuilder from '@pothos/core';
-import { ORDER_BY_ENUM_VALUES, YEAR_ENUM_VALUES } from '@/graphql/constants';
+import { MONTH_ENUM_VALUES, ORDER_BY_ENUM_VALUES, YEAR_ENUM_VALUES } from '@/graphql/constants';
 import { OrderByEnumValue } from '@/graphql/types';
-import { activePersons, events, officeRecords, persons } from '@/graphql/resolvers';
-import { GranicusEvent, GranicusOfficeRecord, GranicusPerson } from '@/legistar/types';
+import { activePersons, events, transcripts, officeRecords, persons, otherOfficeRecords } from '@/graphql/resolvers';
+import { GranicusEvent, GranicusEventItem, GranicusMatterAttachment, GranicusOfficeRecord, GranicusPerson } from '@/legistar/types';
+import { Transcript } from '@/graphql/types';
+import { BASE_URL } from "@/legistar/constants"
 import { zipObject } from 'lodash';
 
 export interface Context {
@@ -22,11 +24,11 @@ function getBearerTokenFromRequest(request: Request): string | null {
 }
 
 function getContext(initial: YogaInitialContext): Context {
-  const legistarApiToken = getBearerTokenFromRequest(initial.request)
+  const legistarApiToken = process.env.NODE_ENV === 'development' && process.env.LEGISTAR_API_TOKEN ? process.env.LEGISTAR_API_TOKEN : getBearerTokenFromRequest(initial.request)
   return { legistarApiToken }
 }
 
-const builder = new SchemaBuilder<{ Context: Context, Objects: { Event: GranicusEvent, CouncilMember: GranicusPerson, OfficeRecord: GranicusOfficeRecord } }>({});
+const builder = new SchemaBuilder<{ Context: Context, Objects: { Event: GranicusEvent, MatterAttachment: GranicusMatterAttachment, EventItem: GranicusEventItem, Transcript: Transcript, CouncilMember: GranicusPerson, OfficeRecord: GranicusOfficeRecord } }>({});
 
 builder.objectType('Event', {
   description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusEvent",
@@ -51,7 +53,37 @@ builder.objectType('Event', {
     minutesLastPublishedAt: t.exposeString('EventMinutesLastPublishedUTC', { nullable: true }),
     comment: t.exposeString('EventComment', { nullable: true }),
     inSiteURL: t.exposeString('EventInSiteURL'),
-    items: t.exposeStringList('EventItems'),
+    items: t.field({
+      type: ['EventItem'],
+      resolve: async (parent, _, context) => {
+        const res = await fetch(`${BASE_URL}/events/${parent.EventId}?EventItems=1&EventItemAttachments=1&token=${context.legistarApiToken}`)
+        const resJson = await res.json()
+        return resJson['EventItems']
+      }
+    }),
+  })
+})
+
+builder.objectType('MatterAttachment', {
+  description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusMatterAttachment",
+  fields: t => ({
+    id: t.exposeString('MatterAttachmentId'),
+    name: t.exposeString('MatterAttachmentName'),
+    link: t.exposeString('MatterAttachmentHyperlink') 
+  })
+})
+
+builder.objectType('EventItem', {
+  description: "https://webapi.legistar.com/Help/ResourceModel?modelName=GranicusEventItem",
+  fields: t => ({
+    id: t.exposeString('EventItemId'),
+    attachments: t.field({
+      type: ['MatterAttachment'],
+      nullable: true,
+      resolve: (parent) =>{
+        return parent.EventItemMatterAttachments
+      }
+    })
   })
 })
 
@@ -115,10 +147,28 @@ builder.objectType('OfficeRecord', {
   })
 })
 
+builder.objectType('Transcript', {
+  description: "A custom type of MatterAttachment. Specifically those with 'transcript' in the name.",
+  fields: t => ({
+    name: t.exposeString('name'),
+    date: t.exposeString('date'),
+    link: t.exposeString('link'),
+    events: t.field({
+      type: ['Event'],
+      resolve: async (parent) => {
+        return parent.events
+      }
+    }),
+  })
+})
 
 const YearEnum = builder.enumType('Year', {
   // creates an array of year strings formatted like Y2015 for years from 1999 to 2024
   values: YEAR_ENUM_VALUES
+});
+
+const MonthEnum = builder.enumType('Month', {
+  values: MONTH_ENUM_VALUES
 });
 
 const OrderByEnum = builder.enumType('OrderBy', {
@@ -143,7 +193,7 @@ builder.queryType({
       resolve: async (_, args, context) => {
         const token = context.legistarApiToken
         if (!token) return []
-        return officeRecords({
+        return otherOfficeRecords({
           yearArg: args.year,
           orderByArg: args.orderBy,
           token
@@ -157,6 +207,10 @@ builder.queryType({
           type: YearEnum,
           required: true
         }),
+        month: t.arg({
+          description: "Month",
+          type: MonthEnum,
+        }),
         orderBy: t.arg({
           description: "Field and direction to order by",
           type: OrderByEnum
@@ -168,6 +222,35 @@ builder.queryType({
         if (!token) return []
         return events({
           yearArg: args.year,
+          monthArg: args.month,
+          orderByArg: args.orderBy,
+          token
+        })
+      }
+    }),
+    transcripts: t.field({
+      args: {
+        year: t.arg({
+          description: "Years that the city council has been in session",
+          type: YearEnum,
+          required: true
+        }),
+        month: t.arg({
+          description: "Month",
+          type: MonthEnum
+        }),
+        orderBy: t.arg({
+          description: "Field and direction to order by",
+          type: OrderByEnum
+        })
+      },
+      type: ['Transcript'],
+      resolve: async (_, args, context) => {
+        const token = context.legistarApiToken
+        if (!token) return []
+        return transcripts({
+          yearArg: args.year,
+          monthArg: args.month,
           orderByArg: args.orderBy,
           token
         })
@@ -211,6 +294,5 @@ const { handleRequest } = createYoga({
   schema: builder.toSchema(),
   context: getContext
 });
-
 
 export { handleRequest as GET, handleRequest as POST, handleRequest as OPTIONS }
